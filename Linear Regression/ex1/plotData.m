@@ -18,8 +18,9 @@ figure; % open a new figure window
 
 
 
-
-
+plot(x,y,'rx','MarkerSize',10); %Plotting the data
+ylabel('Profit in $10,000'); %Set the ylabel
+xlabel('Population in 10,00s'); %Set the xlabel
 % ============================================================
 
 end
