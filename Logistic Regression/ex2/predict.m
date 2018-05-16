@@ -8,7 +8,7 @@ m = size(X, 1); % Number of training examples
 
 % You need to return the following variables correctly
 p = zeros(m, 1);
-
+threshold= 0.5;
 % ====================== YOUR CODE HERE ======================
 % Instructions: Complete the following code to make predictions using
 %               your learned logistic regression parameters. 
@@ -16,7 +16,14 @@ p = zeros(m, 1);
 %
 
 temp=sigmoid(X*theta);
+for i=1:m
+    if temp(i,1)>=threshold
+        p(i,1)=1;
+    else
+        p(i,1)=0;
+    end
 
+end
 % =========================================================================
 
 
