@@ -21,8 +21,8 @@ W = zeros(L_out, 1 + L_in);
 
 
 
-
-
+INIT_EPSILON = 1e-4;
+W=rand(L_in,1+L_out)*(2*INIT_EPSILON)-INIT_EPSILON;
 
 
 
