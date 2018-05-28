@@ -29,7 +29,7 @@ m = size(X, 1);
 J = 0;
 Theta1_grad = zeros(size(Theta1));
 Theta2_grad = zeros(size(Theta2));
-
+X = [ones(m,1) X];
 % ====================== YOUR CODE HERE ======================
 % Instructions: You should complete the code by working through the
 %               following parts.
@@ -62,50 +62,50 @@ Theta2_grad = zeros(size(Theta2));
 %               the regularization separately and then add them to Theta1_grad
 %               and Theta2_grad from Part 2.
 %
-
-Y=zeros(m,num_labels);
-for i=1:m
-    Y(i,y(i))=1;
-end
-
-X = [ones(m,1) X];
-for i=1:m
-    a1 = X(i,:);
-    z2 = Theta1 * a1';
-    a2 = sigmoid(z2); 
-    z3 = Theta2 *[1;a2];
-    a3 = sigmoid(z3); 
-
-    J = J+ (1/m)*sum(-Y(i,:)*log(a3)-(1-Y(i,:))*log(1-a3));
-end
-
-reg=(lambda/(2*m))*(sum(sum(Theta1(:,2:end).^2))+sum(sum(Theta2(:,2:end).^2)));
-
-J=J+reg;
-
-for k=1:m
-    a1 = X(k,:);
-    z2 = Theta1 * a1';
-    a2 = sigmoid(z2); 
-    z3 = Theta2 *[1;a2];
-    a3 = sigmoid(z3); 
-    
-    delta3 = a3-Y(k,:)';
-    delta2 = (Theta2'*delta3).*[1; sigmoidGradient(z2)];
-    delta2 = delta2(2:end);
-    a2=[1;a2];
-    
-    Theta1_grad = Theta1_grad + delta2*a1;
-    Theta2_grad = Theta2_grad + delta3*a2';
-
-end
-Theta1_grad = (1/m)*Theta1_grad+(lambda/m)*[zeros(size(Theta1, 1), 1) Theta1(:,2:end)];
-Theta2_grad = (1/m)*Theta2_grad+(lambda/m)*[zeros(size(Theta2, 1), 1) Theta2(:,2:end)];
-
-
 % -------------------------------------------------------------
 
+Y_recode = zeros(size(X,1),num_labels); %Recode Y so that only relevant positions have 1s
+for i= 1:m 
+    Y_recode(i,y(i))=1;
+end
+
+%Forward Propagation
+for i=1:m
+    a1 = X(i,:); %Get first row and transpose for input layer
+    z2 = Theta1 * a1'; %Calculate z for layer 2
+    a2 = sigmoid(z2);  % Calculate activation of layer 2
+    z3 = Theta2 *[1;a2]; % Add bias unit to second layer of activation functions and calculate z
+    a3 = sigmoid(z3); 
+    J= J+ (1/m)*sum(-Y_recode(i,:)*log(a3)-(1-Y_recode(i,:))*log(1-a3));
+end
+
+%Regularization for Forward Prop
+reg= (lambda/(2*m))*(sum(sum(Theta1(:,2:end).^2)) +sum(sum(Theta2(:,2:end).^2)));
+
+J= J+reg;
+
+%Backprop Propagation
+for i=1:m
+    a1 = X(i,:)'; %Get first row and transpose for input layer
+    z2 = Theta1 * a1; %Calculate z for layer 2
+    a2 = sigmoid(z2);  % Calculate activation of layer 2
+    z3 = Theta2 *[1;a2]; % Add bias unit to second layer of activation functions and calculate z
+    a3 = sigmoid(z3); 
+    
+    del_3 = a3-Y_recode(i,:)';
+    del_2 = (Theta2'*del_3) .* [1; sigmoidGradient(z2)];
+    del_2 = del_2(2:end);
+    a2=[1;a2];
+    
+    Theta1_grad = Theta1_grad + del_2 *a1';
+    Theta2_grad = Theta2_grad + del_3 *a2';
+end
 % =========================================================================
+p1 = (lambda/m)*[zeros(size(Theta1, 1), 1) Theta1(:, 2:end)];
+p2 = (lambda/m)*[zeros(size(Theta2, 1), 1) Theta2(:, 2:end)];
+
+Theta1_grad = Theta1_grad .* (1/m)+p1;
+Theta2_grad = Theta2_grad .* (1/m)+p2;
 
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
