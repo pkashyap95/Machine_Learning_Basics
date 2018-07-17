@@ -8,7 +8,8 @@ function [mu sigma2] = estimateGaussian(X)
 % 
 
 % Useful variables
-[m, n] = size(X);
+
+[m,n]=size(X);
 
 % You should return these values correctly
 mu = zeros(n, 1);
@@ -22,10 +23,10 @@ sigma2 = zeros(n, 1);
 %
 
 
-
-
-
-
+for i=1:n
+    mu(i,:)= (1/m)*sum(X(:,i));
+    sigma2(i,:)= (1/(m-1)) * sum((X(:,i)-mu(i,:)).^2);
+end 
 
 
 
